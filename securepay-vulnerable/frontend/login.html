@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SecurePay – Login & Register</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+  body { background:#07122a; color:#d9e2ff; font-family:'Inter',sans-serif; min-height:100vh; }
+  .glass { background:rgba(17,34,64,0.7); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.1); }
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  input { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px 14px; color:#d9e2ff; width:100%; font-size:15px; outline:none; transition:border-color 0.2s; }
+  input:focus { border-color:#5ffbd6; box-shadow:0 0 0 1px #5ffbd6; }
+  #mobile-menu { display:none; }
+  #mobile-menu.open { display:flex; }
+</style>
+<script>
+  tailwind.config = { darkMode:"class", theme:{ extend:{ colors:{
+    "primary-fixed":"#5ffbd6","on-primary-fixed":"#002019","surface":"#07122a","on-surface":"#d9e2ff",
+    "surface-container-low":"#101b33","surface-container-lowest":"#030d25","surface-container":"#151f37",
+    "surface-container-high":"#1f2942","on-surface-variant":"#bacac3","error":"#ffb4ab","error-container":"#93000a",
+    "on-error-container":"#ffdad6","primary-container":"#5ffbd6","on-primary-container":"#00725e"
+  }}}}
+</script>
+</head>
+<body class="bg-surface text-on-surface">
+
+<header class="fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-xl border-b border-white/10">
+  <nav class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+    <a href="index.html" class="text-2xl font-bold text-primary-fixed">SecurePay</a>
+    <div class="hidden md:flex gap-8">
+      <a href="index.html" class="text-on-surface-variant hover:text-primary-fixed transition-colors text-sm">Home</a>
+      <a href="index.html#features" class="text-on-surface-variant hover:text-primary-fixed transition-colors text-sm">Features</a>
+      <a href="dashboard.html" class="text-on-surface-variant hover:text-primary-fixed transition-colors text-sm">Dashboard</a>
+      <a href="security.html" class="text-on-surface-variant hover:text-primary-fixed transition-colors text-sm">Security</a>
+      <a href="login.html" class="text-primary-fixed border-b-2 border-primary-fixed pb-1 text-sm">Login</a>
+    </div>
+    <button class="md:hidden text-on-surface-variant" onclick="document.getElementById('mobile-menu').classList.toggle('open')">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="flex-col gap-4 px-6 pb-5 bg-surface-container-low border-b border-white/10">
+    <a href="index.html" class="text-on-surface-variant py-2 text-sm">Home</a>
+    <a href="dashboard.html" class="text-on-surface-variant py-2 text-sm">Dashboard</a>
+    <a href="security.html" class="text-on-surface-variant py-2 text-sm">Security</a>
+  </div>
+</header>
+
+<main class="pt-24 pb-12 min-h-screen">
+  <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center min-h-[700px]">
+
+    <!-- LEFT INFO -->
+    <div class="space-y-8 order-2 lg:order-1">
+      <h1 class="text-5xl font-bold text-primary-fixed max-w-lg leading-tight">Advanced Cryptographic Infrastructure</h1>
+      <p class="text-lg text-on-surface-variant max-w-md">Experience institutional-grade security for your digital assets.</p>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="glass p-6 rounded-xl">
+          <span class="material-symbols-outlined text-primary-fixed mb-2 block" style="font-variation-settings:'FILL' 1">shield</span>
+          <div class="text-2xl font-bold text-white">AES-256</div>
+          <div class="text-xs text-on-surface-variant uppercase tracking-wider mt-1">Encryption Standard</div>
+        </div>
+        <div class="glass p-6 rounded-xl">
+          <span class="material-symbols-outlined text-primary-fixed mb-2 block" style="font-variation-settings:'FILL' 1">verified_user</span>
+          <div class="text-2xl font-bold text-white">99.9%</div>
+          <div class="text-xs text-on-surface-variant uppercase tracking-wider mt-1">Uptime Security</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 bg-primary-container/10 border border-primary-container/20 p-4 rounded-lg">
+        <span class="material-symbols-outlined text-primary-fixed" style="font-variation-settings:'FILL' 1">lock</span>
+        <span class="text-sm text-primary-fixed">Protected with secure JWT authentication</span>
+      </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="order-1 lg:order-2">
+      <div class="glass w-full p-10 rounded-2xl" style="border-color:rgba(255,255,255,0.12);">
+        <h2 class="text-3xl font-bold text-white mb-2">Sign In</h2>
+        <p class="text-sm text-on-surface-variant mb-8">Enter your credentials to access your secure dashboard.</p>
+
+        <div id="login-alert" class="hidden mb-5 p-4 rounded-lg border flex items-start gap-3"></div>
+
+        <form id="login-form" class="space-y-5" onsubmit="handleLogin(event)">
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Email Address</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">mail</span>
+              <!-- VULN: No client-side input sanitization -->
+              <input id="login-email" type="email" placeholder="name@company.com" style="padding-left:42px;" required/>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Password</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">lock_open</span>
+              <!-- VULN: Password sent over plain HTTP - visible in Wireshark -->
+              <input id="login-password" type="password" placeholder="••••••••" style="padding-left:42px;" required/>
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" class="rounded border-white/20 bg-surface-container text-primary-fixed"/>
+              <span class="text-sm text-on-surface-variant">Remember Me</span>
+            </label>
+            <a href="#" class="text-sm text-primary-fixed hover:underline">Forgot Password?</a>
+          </div>
+          <button id="login-btn" type="submit" class="w-full bg-primary-fixed text-on-primary-fixed text-xs font-bold tracking-widest uppercase py-4 rounded-lg hover:shadow-[0_0_20px_rgba(95,251,214,0.4)] transition-all active:scale-95 flex items-center justify-center gap-2">
+            <span id="login-btn-text">Login</span>
+            <span id="login-spinner" class="hidden material-symbols-outlined animate-spin text-lg">progress_activity</span>
+          </button>
+          <p class="text-center text-sm text-on-surface-variant pt-2">
+            Don't have an account? <a href="#register" class="text-primary-fixed font-bold hover:underline">Create Account</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER SECTION -->
+  <div class="max-w-7xl mx-auto px-6 py-20" id="register">
+    <div class="glass rounded-2xl overflow-hidden grid md:grid-cols-5">
+      <div class="md:col-span-2 relative hidden md:block">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuz5NweSI70yGHsemwUVL0oQ953mHkVTd1jF7aRx2GXkVn-7B9WTNh2hSoF-y3Utq4UnHdZ8IHesAkIFRunouHuckzs1Ex2RHukC27FaCtqdeS1jGKuygIkf5YOctFDRZkc3sF1CAcx3UjCdZd2pmPty5_1EtZJwolRU1HU1_NJmD1xOYOXDIxO4DSSeDBE_lvg6Dlg-F7JxN6VPi6OU_RS_aqOZWt3g4ztY_OCHo6Of_Hch3-nXaMtB8qdy3T_Z8EJcRb4C0_PkE" alt="Security" class="absolute inset-0 w-full h-full object-cover opacity-50"/>
+        <div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest/80 to-transparent flex flex-col justify-end p-12">
+          <h3 class="text-3xl font-bold text-primary-fixed mb-3">Join the Network</h3>
+          <p class="text-on-surface-variant text-sm">Scale your financial operations with the world's most secure transaction engine.</p>
+        </div>
+      </div>
+      <div class="md:col-span-3 p-10 md:p-16">
+        <h2 class="text-3xl font-bold text-white mb-2">Registration</h2>
+        <p class="text-sm text-on-surface-variant mb-8">Create your identity in the SecurePay ecosystem.</p>
+
+        <div id="reg-alert" class="hidden mb-5 p-4 rounded-lg border flex items-start gap-3"></div>
+
+        <form id="reg-form" class="grid md:grid-cols-2 gap-5" onsubmit="handleRegister(event)">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Full Name</label>
+            <!-- VULN: No XSS sanitization on name field -->
+            <input id="reg-name" type="text" placeholder="John Doe" required/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Email</label>
+            <input id="reg-email" type="email" placeholder="john@example.com" required/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Phone</label>
+            <input id="reg-phone" type="tel" placeholder="+1 (555) 000-0000" required/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Password</label>
+            <!-- VULN: Weak passwords like "1" or "abc" accepted - no strength check -->
+            <input id="reg-password" type="password" placeholder="••••••••" required/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Confirm Password</label>
+            <input id="reg-confirm" type="password" placeholder="••••••••" required/>
+          </div>
+          <div class="md:col-span-2 pt-2">
+            <button id="reg-btn" type="submit" class="w-full border border-primary-fixed text-primary-fixed text-xs font-bold tracking-widest uppercase py-4 rounded-lg hover:bg-primary-fixed/10 transition-all active:scale-95 flex items-center justify-center gap-2">
+              <span id="reg-btn-text">Create Account</span>
+              <span id="reg-spinner" class="hidden material-symbols-outlined animate-spin text-lg">progress_activity</span>
+            </button>
+            <p class="text-center text-sm text-on-surface-variant mt-5">
+              By registering you agree to our <a href="#" class="text-white underline">Terms</a> and <a href="#" class="text-white underline">Security Policy</a>.
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="py-10 bg-surface-container-lowest border-t border-white/10">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+    <div><div class="text-xl font-bold text-primary-fixed mb-1">SecurePay</div><p class="text-sm text-on-surface-variant">© 2024 SecurePay. All rights reserved.</p></div>
+    <div class="flex gap-8"><a href="#" class="text-sm text-on-surface-variant hover:text-white">Contact</a><a href="#" class="text-sm text-on-surface-variant hover:text-white">Privacy</a><a href="#" class="text-sm text-on-surface-variant hover:text-white">Terms</a></div>
+  </div>
+</footer>
+
+<script>
+  const API_BASE = 'http://localhost:5000/api';
+  // Redirect if already logged in
+  if (localStorage.getItem('sp_vuln_token') && !window.location.hash) window.location.href = 'dashboard.html';
+
+  function showAlert(id, msg, type='error') {
+    const el = document.getElementById(id);
+    el.className = 'mb-5 p-4 rounded-lg border flex items-start gap-3';
+    if (type==='error') { el.classList.add('border-error/30','bg-error-container/20'); el.innerHTML=`<span class="material-symbols-outlined text-error text-lg mt-0.5" style="font-variation-settings:'FILL' 1">error</span><span class="text-error text-sm">${msg}</span>`; }
+    else { el.classList.add('border-primary-fixed/30','bg-primary-container/10'); el.innerHTML=`<span class="material-symbols-outlined text-primary-fixed text-lg mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span><span class="text-primary-fixed text-sm">${msg}</span>`; }
+    el.classList.remove('hidden');
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    document.getElementById('login-btn').disabled = true;
+    document.getElementById('login-spinner').classList.remove('hidden');
+    document.getElementById('login-btn-text').textContent = 'Signing in...';
+    try {
+      // VULN: Credentials sent over plain HTTP - capturable by Wireshark / MITM
+      const res = await fetch(`${API_BASE}/login`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert('login-alert', data.message || 'Login failed.');
+      localStorage.setItem('sp_vuln_token', data.token);
+      localStorage.setItem('sp_vuln_user', JSON.stringify(data.user));
+      showAlert('login-alert', `Welcome back, ${data.user.fullName}! Redirecting...`, 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1200);
+    } catch(err) {
+      showAlert('login-alert', 'Cannot connect to server. Make sure backend is running on port 5000.');
+    } finally {
+      document.getElementById('login-btn').disabled = false;
+      document.getElementById('login-spinner').classList.add('hidden');
+      document.getElementById('login-btn-text').textContent = 'Login';
+    }
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    const fullName = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    // VULN: Only basic check - no strength validation
+    if (password !== confirm) return showAlert('reg-alert', 'Passwords do not match.');
+    document.getElementById('reg-btn').disabled = true;
+    document.getElementById('reg-spinner').classList.remove('hidden');
+    document.getElementById('reg-btn-text').textContent = 'Creating...';
+    try {
+      const res = await fetch(`${API_BASE}/register`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ fullName, email, phone, password })
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert('reg-alert', data.message || 'Registration failed.');
+      localStorage.setItem('sp_vuln_token', data.token);
+      localStorage.setItem('sp_vuln_user', JSON.stringify(data.user));
+      showAlert('reg-alert', `Account created! Wallet: ${data.user.walletId}. Redirecting...`, 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1400);
+    } catch(err) {
+      showAlert('reg-alert', 'Cannot connect to server.');
+    } finally {
+      document.getElementById('reg-btn').disabled = false;
+      document.getElementById('reg-spinner').classList.add('hidden');
+      document.getElementById('reg-btn-text').textContent = 'Create Account';
+    }
+  }
+
+  if (window.location.hash === '#register')
+    setTimeout(() => document.getElementById('register')?.scrollIntoView({ behavior:'smooth' }), 100);
+</script>
+</body>
+</html>

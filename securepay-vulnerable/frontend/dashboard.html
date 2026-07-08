@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SecurePay – Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+  body { background:#07122a; color:#d9e2ff; font-family:'Inter',sans-serif; }
+  .glass { background:rgba(17,34,64,0.7); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.1); transition:all 0.3s; }
+  .glass:hover { border-color:rgba(100,255,218,0.25); }
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  #mobile-menu { display:none; } #mobile-menu.open { display:flex; }
+  #modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; align-items:center; justify-content:center; }
+  #modal-overlay.open { display:flex; }
+  input,select { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px 14px; color:#d9e2ff; width:100%; outline:none; }
+  input:focus,select:focus { border-color:#5ffbd6; }
+</style>
+<script>
+  tailwind.config = { darkMode:"class", theme:{ extend:{ colors:{
+    "primary-fixed":"#5ffbd6","on-primary-fixed":"#002019","surface":"#07122a","on-surface":"#d9e2ff",
+    "surface-container-low":"#101b33","surface-container-lowest":"#030d25","surface-container":"#151f37",
+    "surface-container-high":"#1f2942","surface-container-highest":"#2a344e","on-surface-variant":"#bacac3",
+    "error":"#ffb4ab","error-container":"#93000a","on-error-container":"#ffdad6",
+    "primary-container":"#5ffbd6","on-primary-container":"#00725e","secondary-container":"#3c4962","on-secondary-container":"#abb9d6"
+  }}}}
+</script>
+</head>
+<body class="bg-surface text-on-surface">
+
+<!-- NAVBAR -->
+<nav class="fixed top-0 w-full bg-surface/70 backdrop-blur-xl border-b border-white/10 z-50">
+  <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+    <div class="flex items-center gap-8">
+      <a href="index.html" class="text-2xl font-bold text-primary-fixed">SecurePay</a>
+      <div class="hidden md:flex gap-6 text-sm">
+        <a href="index.html" class="text-on-surface-variant hover:text-primary-fixed transition-colors">Home</a>
+        <a href="index.html#features" class="text-on-surface-variant hover:text-primary-fixed transition-colors">Features</a>
+        <a href="dashboard.html" class="text-primary-fixed border-b-2 border-primary-fixed pb-0.5">Dashboard</a>
+        <a href="security.html" class="text-on-surface-variant hover:text-primary-fixed transition-colors">Security</a>
+        <a href="index.html#about" class="text-on-surface-variant hover:text-primary-fixed transition-colors">About</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="hidden md:flex flex-col items-end mr-2">
+        <span id="nav-wallet-id" class="text-xs font-bold text-primary-fixed">Loading...</span>
+        <span class="text-xs text-on-surface-variant italic">Secure Session</span>
+      </div>
+      <button class="material-symbols-outlined text-on-surface-variant hover:text-primary-fixed relative transition-colors">
+        notifications<span class="absolute top-0 right-0 w-2 h-2 bg-primary-fixed rounded-full border border-surface"></span>
+      </button>
+      <button onclick="logout()" class="hidden md:block bg-primary-fixed text-on-primary-fixed px-5 py-2 rounded-full text-xs font-bold tracking-widest hover:shadow-[0_0_15px_rgba(95,251,214,0.4)] transition-all active:scale-95">LOGOUT</button>
+      <button class="md:hidden text-on-surface-variant" onclick="document.getElementById('mobile-menu').classList.toggle('open')"><span class="material-symbols-outlined">menu</span></button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="flex-col gap-4 px-6 pb-5 bg-surface-container-low border-b border-white/10 text-sm">
+    <a href="index.html" class="text-on-surface-variant py-2">Home</a>
+    <a href="dashboard.html" class="text-primary-fixed py-2">Dashboard</a>
+    <a href="security.html" class="text-on-surface-variant py-2">Security</a>
+    <button onclick="logout()" class="text-left text-error py-2">Logout</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="pt-24 pb-12 px-6 max-w-7xl mx-auto">
+
+  <div id="page-alert" class="hidden mb-6 p-4 rounded-lg border flex items-start gap-3"></div>
+
+  <!-- Header -->
+  <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+    <div>
+      <h1 class="text-4xl font-bold text-white mb-2" id="welcome-msg">Welcome back</h1>
+      <p class="text-on-surface-variant text-sm" id="last-login-msg">Loading session data...</p>
+    </div>
+    <div class="flex items-center gap-3 bg-primary-container/10 border border-primary-fixed/20 px-4 py-2 rounded-xl">
+      <span class="material-symbols-outlined text-primary-fixed" style="font-variation-settings:'FILL' 1">shield_with_heart</span>
+      <div><span class="block text-xs font-bold text-primary-fixed uppercase tracking-wider">Security Status</span><span class="text-xs text-on-primary-container font-bold">Active / Protected</span></div>
+    </div>
+  </header>
+
+  <!-- Wallet Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+    <div class="glass p-6 rounded-xl">
+      <p class="text-xs text-on-surface-variant uppercase tracking-wider mb-3">CURRENT BALANCE</p>
+      <h2 class="text-3xl font-bold text-primary-fixed" id="balance-display">$0.00</h2>
+      <div class="mt-5 flex items-center gap-2 text-primary-fixed/60 text-xs"><span class="material-symbols-outlined text-sm">account_balance_wallet</span><span id="wallet-id-display">—</span></div>
+    </div>
+    <div class="glass p-6 rounded-xl">
+      <p class="text-xs text-on-surface-variant uppercase tracking-wider mb-3">MONTHLY SPENDING</p>
+      <h2 class="text-3xl font-bold text-white" id="spending-display">$0.00</h2>
+      <div class="mt-5 w-full bg-surface-container-highest h-1 rounded-full overflow-hidden"><div id="spending-bar" class="bg-primary-fixed h-full transition-all" style="width:0%"></div></div>
+      <p class="mt-2 text-xs text-on-surface-variant" id="spending-pct">Calculating...</p>
+    </div>
+    <div class="glass p-6 rounded-xl">
+      <p class="text-xs text-on-surface-variant uppercase tracking-wider mb-3">RECENT DEPOSITS</p>
+      <h2 class="text-3xl font-bold text-white" id="deposits-display">$0.00</h2>
+      <div class="mt-5 flex items-center gap-2 text-primary-fixed/60 text-xs"><span class="material-symbols-outlined text-sm">trending_up</span><span>This month</span></div>
+    </div>
+    <div class="glass p-6 rounded-xl flex flex-col items-center justify-center text-center">
+      <div class="relative w-20 h-20 mb-3">
+        <svg class="w-full h-full -rotate-90"><circle class="text-surface-container-highest" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"/><circle id="score-ring" class="text-primary-fixed" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213.6" stroke-dashoffset="53.4" stroke-linecap="round" stroke-width="6"/></svg>
+        <div class="absolute inset-0 flex items-center justify-center text-2xl font-bold text-primary-fixed" id="score-val">—</div>
+      </div>
+      <p class="text-xs text-on-surface-variant uppercase tracking-wider">SECURITY SCORE</p>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="flex flex-wrap gap-4 mb-12">
+    <button onclick="openModal('send')" class="flex items-center gap-2 bg-primary-fixed text-on-primary-fixed px-6 py-3 rounded-lg text-xs font-bold tracking-widest hover:shadow-[0_0_20px_rgba(95,251,214,0.4)] transition-all active:scale-95"><span class="material-symbols-outlined text-lg">send</span>SEND MONEY</button>
+    <button onclick="openModal('deposit')" class="flex items-center gap-2 border border-primary-fixed text-primary-fixed px-6 py-3 rounded-lg text-xs font-bold tracking-widest hover:bg-primary-fixed/10 transition-all active:scale-95"><span class="material-symbols-outlined text-lg">request_quote</span>ADD FUNDS</button>
+    <a href="security.html" class="flex items-center gap-2 border border-primary-fixed text-primary-fixed px-6 py-3 rounded-lg text-xs font-bold tracking-widest hover:bg-primary-fixed/10 transition-all active:scale-95"><span class="material-symbols-outlined text-lg">security</span>SECURITY CENTER</a>
+    <button onclick="downloadCSV()" class="flex items-center gap-2 text-on-surface-variant hover:text-primary-fixed px-6 py-3 rounded-lg text-xs font-bold tracking-widest transition-all"><span class="material-symbols-outlined text-lg">analytics</span>DOWNLOAD CSV</button>
+  </div>
+
+  <!-- Transactions Table -->
+  <section class="glass rounded-2xl overflow-hidden">
+    <div class="px-8 py-6 border-b border-white/10 flex justify-between items-center">
+      <h3 class="text-2xl font-semibold text-white">Recent Transactions</h3>
+      <select id="tx-filter" onchange="loadTransactions()" class="w-auto text-xs rounded-lg px-3 py-2 text-on-surface-variant bg-surface-container-highest">
+        <option value="">All Status</option>
+        <option value="completed">Completed</option>
+        <option value="pending">Pending</option>
+        <option value="failed">Failed</option>
+      </select>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead><tr class="bg-surface-container-low/50 text-xs text-on-surface-variant uppercase tracking-wider">
+          <th class="px-8 py-4">Transaction ID</th>
+          <th class="px-8 py-4">Receiver</th>
+          <th class="px-8 py-4">Date</th>
+          <th class="px-8 py-4 text-right">Amount</th>
+          <th class="px-8 py-4 text-center">Status</th>
+        </tr></thead>
+        <tbody id="tx-body" class="divide-y divide-white/5">
+          <tr><td colspan="5" class="text-center py-12 text-on-surface-variant">Loading transactions...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="px-8 py-5 border-t border-white/5 text-center">
+      <button id="load-more-btn" onclick="loadTransactions(true)" class="text-sm text-on-surface-variant hover:text-primary-fixed transition-colors">Load more transactions</button>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="py-10 bg-surface-container-lowest border-t border-white/10">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+    <div><div class="text-xl font-bold text-primary-fixed mb-1">SecurePay</div><p class="text-sm text-on-surface-variant">© 2024 SecurePay. All rights reserved.</p></div>
+    <div class="flex gap-8 text-sm text-on-surface-variant"><a href="#" class="hover:text-white">Contact</a><a href="#" class="hover:text-white">Privacy Policy</a><a href="security.html" class="hover:text-white">Security Center</a></div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="glass rounded-2xl p-8 w-full max-w-md mx-4 border border-white/20 shadow-2xl" onclick="event.stopPropagation()">
+    <div class="flex justify-between items-center mb-6">
+      <h3 id="modal-title" class="text-2xl font-semibold text-white"></h3>
+      <button onclick="closeModal()" class="text-on-surface-variant hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div id="modal-alert" class="hidden mb-4 p-3 rounded-lg border text-sm"></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:5000/api';
+  let currentPage = 1, allTx = [];
+  const token = localStorage.getItem('sp_vuln_token');
+  const user = JSON.parse(localStorage.getItem('sp_vuln_user') || 'null');
+  if (!token || !user) window.location.href = 'login.html';
+
+  function H() { return { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` }; }
+
+  async function initDashboard() {
+    document.getElementById('nav-wallet-id').textContent = user.walletId || '—';
+    document.getElementById('welcome-msg').textContent = `Welcome back, ${user.fullName}`;
+    document.getElementById('last-login-msg').textContent = user.lastLogin ? `Last login: ${new Date(user.lastLogin).toLocaleString()}` : 'First login — welcome!';
+    await Promise.all([loadWallet(), loadTransactions()]);
+  }
+
+  async function loadWallet() {
+    try {
+      const res = await fetch(`${API_BASE}/wallet`, { headers: H() });
+      if (res.status === 401) return logout();
+      const data = await res.json();
+      if (!data.success) return;
+      const w = data.wallet;
+      document.getElementById('balance-display').textContent = `$${w.balance.toFixed(2)}`;
+      document.getElementById('wallet-id-display').textContent = w.walletId;
+      document.getElementById('spending-display').textContent = `$${(w.monthlySpending||0).toFixed(2)}`;
+      document.getElementById('deposits-display').textContent = `$${(w.recentDeposits||0).toFixed(2)}`;
+      const score = w.securityScore || 72;
+      document.getElementById('score-ring').style.strokeDashoffset = 213.6 - (score/100)*213.6;
+      document.getElementById('score-val').textContent = score;
+      const pct = Math.min(100,(w.monthlySpending/5000)*100);
+      document.getElementById('spending-bar').style.width = pct+'%';
+      document.getElementById('spending-pct').textContent = `${pct.toFixed(0)}% of $5,000 budget`;
+    } catch(e) { console.error(e); }
+  }
+
+  async function loadTransactions(append=false) {
+    if (!append) currentPage = 1;
+    const status = document.getElementById('tx-filter').value;
+    const params = new URLSearchParams({ page: currentPage, limit: 10 });
+    if (status) params.append('status', status);
+    try {
+      const res = await fetch(`${API_BASE}/transactions?${params}`, { headers: H() });
+      const data = await res.json();
+      if (!data.success) return;
+      allTx = append ? [...allTx, ...data.transactions] : data.transactions;
+      if (append) currentPage++;
+      renderTx();
+      document.getElementById('load-more-btn').style.display = currentPage > (data.pages||1) ? 'none' : '';
+    } catch(e) {
+      document.getElementById('tx-body').innerHTML = `<tr><td colspan="5" class="text-center py-12 text-error text-sm">Failed to load. Is the backend running?</td></tr>`;
+    }
+  }
+
+  function renderTx() {
+    const tbody = document.getElementById('tx-body');
+    if (!allTx.length) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-on-surface-variant text-sm">No transactions found.</td></tr>`; return; }
+    const statusBadge = s => ({ completed:`<span class="inline-flex items-center gap-1 bg-primary-container/10 text-primary-fixed px-3 py-1 rounded-full text-xs font-bold"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">check_circle</span>COMPLETED</span>`, pending:`<span class="inline-flex items-center gap-1 bg-secondary-container/40 text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold"><span class="material-symbols-outlined text-sm">schedule</span>PENDING</span>`, failed:`<span class="inline-flex items-center gap-1 bg-error-container/20 text-error px-3 py-1 rounded-full text-xs font-bold"><span class="material-symbols-outlined text-sm">error</span>FAILED</span>` }[s] || s);
+    tbody.innerHTML = allTx.map(tx => {
+      const isOut = tx.sender?._id === user.id || tx.sender?.id === user.id;
+      const party = isOut ? (tx.receiver?.fullName||tx.receiverEmail||'Unknown') : (tx.sender?.fullName||'Unknown');
+      const amtColor = isOut ? 'text-on-surface' : 'text-primary-fixed';
+      const sign = isOut ? '-' : '+';
+      const date = new Date(tx.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      // VULN: tx.description rendered via innerHTML - Stored XSS executes here
+      return `<tr class="hover:bg-white/5 transition-colors">
+        <td class="px-8 py-5 text-primary-fixed/80 font-mono text-xs">#${tx.transactionId}</td>
+        <td class="px-8 py-5 text-sm">${party}</td>
+        <td class="px-8 py-5 text-xs text-on-surface-variant">${date}</td>
+        <td class="px-8 py-5 text-sm ${amtColor} text-right">${sign}$${tx.amount?.toFixed(2)}</td>
+        <td class="px-8 py-5 text-center">${statusBadge(tx.status)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function openModal(type) {
+    const overlay = document.getElementById('modal-overlay');
+    document.getElementById('modal-alert').classList.add('hidden');
+    if (type === 'send') {
+      document.getElementById('modal-title').textContent = 'Send Money';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="space-y-4">
+          <div><label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Receiver Email</label><input id="send-email" type="email" placeholder="receiver@example.com"/></div>
+          <div><label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Amount (USD)</label><input id="send-amount" type="number" step="0.01" placeholder="0.00"/></div>
+          <div><label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Description</label><input id="send-desc" type="text" placeholder="Optional note"/></div>
+          <p class="text-xs text-on-surface-variant">Balance: <span class="text-primary-fixed font-bold">$${(user.balance||0).toFixed(2)}</span></p>
+          <button onclick="submitTransfer()" class="w-full bg-primary-fixed text-on-primary-fixed text-xs font-bold tracking-widest uppercase py-3 rounded-lg hover:shadow-[0_0_15px_rgba(95,251,214,0.3)] transition-all active:scale-95">Send Transfer</button>
+        </div>`;
+    } else {
+      document.getElementById('modal-title').textContent = 'Add Funds';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="space-y-4">
+          <p class="text-sm text-on-surface-variant">Simulation only — adds funds to your wallet balance.</p>
+          <div><label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Amount (USD)</label><input id="dep-amount" type="number" step="0.01" placeholder="Enter amount"/></div>
+          <button onclick="submitDeposit()" class="w-full bg-primary-fixed text-on-primary-fixed text-xs font-bold tracking-widest uppercase py-3 rounded-lg hover:shadow-[0_0_15px_rgba(95,251,214,0.3)] transition-all active:scale-95">Add Funds</button>
+        </div>`;
+    }
+    overlay.classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+  function showModalAlert(msg, type='error') {
+    const el = document.getElementById('modal-alert');
+    el.className = `mb-4 p-3 rounded-lg border text-sm ${type==='error' ? 'border-error/30 bg-error-container/20 text-error' : 'border-primary-fixed/30 bg-primary-container/10 text-primary-fixed'}`;
+    el.textContent = msg; el.classList.remove('hidden');
+  }
+
+  async function submitTransfer() {
+    const receiverEmail = document.getElementById('send-email').value.trim();
+    const amount = parseFloat(document.getElementById('send-amount').value);
+    const description = document.getElementById('send-desc').value;
+    if (!receiverEmail || isNaN(amount)) return showModalAlert('Please fill in all fields.');
+    try {
+      // VULN: No client-side amount validation - negative values sent
+      // VULN: description not sanitized - XSS payload accepted
+      const res = await fetch(`${API_BASE}/transfer`, { method:'POST', headers:H(), body:JSON.stringify({ receiverEmail, amount, description }) });
+      const data = await res.json();
+      if (!res.ok) return showModalAlert(data.message||'Transfer failed.');
+      showModalAlert(data.message, 'success');
+      user.balance = data.newBalance;
+      localStorage.setItem('sp_vuln_user', JSON.stringify(user));
+      await Promise.all([loadWallet(), loadTransactions()]);
+      setTimeout(closeModal, 1800);
+    } catch(e) { showModalAlert('Server connection failed.'); }
+  }
+
+  async function submitDeposit() {
+    const amount = parseFloat(document.getElementById('dep-amount').value);
+    if (isNaN(amount)) return showModalAlert('Enter a valid amount.');
+    try {
+      const res = await fetch(`${API_BASE}/wallet/deposit`, { method:'POST', headers:H(), body:JSON.stringify({ amount }) });
+      const data = await res.json();
+      if (!res.ok) return showModalAlert(data.message||'Deposit failed.');
+      showModalAlert(`Deposited $${amount.toFixed(2)} successfully!`, 'success');
+      await loadWallet();
+      setTimeout(closeModal, 1500);
+    } catch(e) { showModalAlert('Server connection failed.'); }
+  }
+
+  function downloadCSV() {
+    if (!allTx.length) return;
+    const rows = allTx.map(tx => [tx.transactionId, tx.type, tx.receiver?.email||'N/A', tx.amount, tx.status, new Date(tx.createdAt).toISOString()]);
+    const csv = [['ID','Type','Receiver','Amount','Status','Date'], ...rows].map(r => r.join(',')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+    a.download = `securepay-tx-${Date.now()}.csv`; a.click();
+  }
+
+  async function logout() {
+    try { await fetch(`${API_BASE}/logout`, { method:'POST', headers:H() }); } catch(_) {}
+    localStorage.removeItem('sp_vuln_token'); localStorage.removeItem('sp_vuln_user');
+    window.location.href = 'login.html';
+  }
+
+  initDashboard();
+</script>
+</body>
+</html>

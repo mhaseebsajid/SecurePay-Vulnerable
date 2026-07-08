@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SecurePay – Secure Digital Wallet System</title>
+<!-- VULN: No Content-Security-Policy meta tag -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+  body { background-color:#07122a; color:#d9e2ff; font-family:'Inter',sans-serif; }
+  .glass-card { background:rgba(17,34,64,0.7); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.1); transition:all 0.3s ease; }
+  .glass-card:hover { border-color:rgba(100,255,218,0.3); box-shadow:0 0 20px rgba(100,255,218,0.1); }
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  #mobile-menu { display:none; }
+  #mobile-menu.open { display:flex; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .float { animation:float 4s ease-in-out infinite; }
+  @keyframes pulse-ring { 0%,100%{box-shadow:0 0 0 0 rgba(100,255,218,0.2)} 50%{box-shadow:0 0 0 12px rgba(100,255,218,0)} }
+  .pulse-ring { animation:pulse-ring 2.5s infinite; }
+</style>
+<script>
+  tailwind.config = { darkMode:"class", theme:{ extend:{ colors:{
+    "primary-fixed":"#5ffbd6","on-primary-fixed":"#002019","primary-container":"#5ffbd6","on-primary-container":"#00725e",
+    "surface":"#07122a","on-surface":"#d9e2ff","surface-container-low":"#101b33","surface-container-lowest":"#030d25",
+    "surface-container":"#151f37","surface-container-high":"#1f2942","surface-container-highest":"#2a344e",
+    "on-surface-variant":"#bacac3","secondary-container":"#3c4962","on-secondary-container":"#abb9d6",
+    "error":"#ffb4ab","error-container":"#93000a","on-error-container":"#ffdad6",
+    "outline":"#85948e","primary":"#ffffff","tertiary":"#ffffff"
+  }}}}
+</script>
+</head>
+<body class="bg-surface text-on-surface">
+
+<header class="fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-xl border-b border-white/10">
+  <nav class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+    <a href="index.html" class="text-2xl font-bold text-primary-fixed tracking-tight">SecurePay</a>
+    <div class="hidden md:flex items-center gap-8">
+      <a class="text-primary-fixed border-b-2 border-primary-fixed pb-1 text-sm font-medium" href="index.html">Home</a>
+      <a class="text-on-surface-variant hover:text-primary-fixed transition-colors text-sm" href="#features">Features</a>
+      <a class="text-on-surface-variant hover:text-primary-fixed transition-colors text-sm" href="dashboard.html">Dashboard</a>
+      <a class="text-on-surface-variant hover:text-primary-fixed transition-colors text-sm" href="security.html">Security</a>
+      <a class="text-on-surface-variant hover:text-primary-fixed transition-colors text-sm" href="#about">About</a>
+    </div>
+    <div class="flex items-center gap-3" id="nav-auth">
+      <a href="login.html" class="hidden md:block border border-primary-fixed text-primary-fixed px-5 py-2 rounded-full text-xs font-bold tracking-widest hover:bg-primary-fixed/10 transition-all">LOGIN</a>
+      <a href="login.html#register" class="bg-primary-fixed text-on-primary-fixed px-5 py-2 rounded-full text-xs font-bold tracking-widest hover:shadow-[0_0_20px_rgba(95,251,214,0.4)] transition-all">REGISTER</a>
+    </div>
+    <button class="md:hidden text-on-surface-variant" onclick="document.getElementById('mobile-menu').classList.toggle('open')">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="flex-col gap-4 px-6 pb-5 bg-surface-container-low border-b border-white/10">
+    <a href="index.html" class="text-primary-fixed py-2 text-sm">Home</a>
+    <a href="#features" class="text-on-surface-variant py-2 text-sm">Features</a>
+    <a href="dashboard.html" class="text-on-surface-variant py-2 text-sm">Dashboard</a>
+    <a href="security.html" class="text-on-surface-variant py-2 text-sm">Security</a>
+    <a href="login.html" class="text-on-surface-variant py-2 text-sm">Login</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="relative min-h-screen pt-32 pb-20 flex items-center overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-fixed/5 rounded-full blur-[120px]"></div>
+    <div class="absolute top-1/4 right-0 w-96 h-96 bg-secondary-container/10 rounded-full blur-[100px]"></div>
+    <svg class="absolute inset-0 w-full h-full opacity-5"><defs><pattern id="g" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0L0 0 0 60" fill="none" stroke="#5ffbd6" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>
+  </div>
+  <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div class="space-y-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary-fixed/20 bg-primary-fixed/5 text-primary-fixed text-xs font-bold uppercase tracking-widest pulse-ring">
+          <span class="material-symbols-outlined text-sm">verified_user</span>Military-Grade Security
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight">Secure Digital<br/>Wallet System</h1>
+        <p class="text-lg text-on-surface-variant max-w-lg leading-relaxed">Fast, secure, and trusted digital financial transactions with advanced cybersecurity protection.</p>
+        <div class="flex flex-wrap gap-4">
+          <a href="login.html" class="bg-primary-fixed text-on-primary-fixed px-8 py-4 rounded-lg text-xs font-bold tracking-widest hover:shadow-[0_0_24px_rgba(95,251,214,0.4)] transition-all active:scale-95">LOGIN</a>
+          <a href="login.html#register" class="border border-primary-fixed text-primary-fixed px-8 py-4 rounded-lg text-xs font-bold tracking-widest hover:bg-primary-fixed/5 transition-all active:scale-95">REGISTER</a>
+          <a href="#about" class="border border-white/10 text-on-surface-variant px-8 py-4 rounded-lg text-xs font-bold tracking-widest hover:border-primary-fixed/30 transition-all active:scale-95">LEARN MORE</a>
+        </div>
+      </div>
+      <div class="float">
+        <div class="glass-card rounded-2xl p-8 border-primary-fixed/20">
+          <div class="flex justify-between items-center mb-6">
+            <div><p class="text-xs text-on-surface-variant">Current Balance</p><p class="text-3xl font-bold text-primary-fixed">$12,450.75</p></div>
+            <div class="w-12 h-12 rounded-full bg-primary-fixed/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary-fixed" style="font-variation-settings:'FILL' 1">account_balance_wallet</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="bg-surface-container rounded-lg p-3"><p class="text-xs text-on-surface-variant mb-1">Security Score</p><p class="text-lg font-bold text-primary-fixed">88/100</p></div>
+            <div class="bg-surface-container rounded-lg p-3"><p class="text-xs text-on-surface-variant mb-1">Transactions</p><p class="text-lg font-bold text-white">1,284</p></div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between bg-surface-container rounded-lg px-3 py-2"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-on-surface-variant">arrow_upward</span><span class="text-xs">Sent to Bob</span></div><span class="text-xs text-on-surface-variant">-$240.00</span></div>
+            <div class="flex justify-between bg-surface-container rounded-lg px-3 py-2"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-primary-fixed">arrow_downward</span><span class="text-xs">Received</span></div><span class="text-xs text-primary-fixed">+$1,200.00</span></div>
+          </div>
+          <div class="absolute -bottom-4 -right-4 bg-primary-container text-on-primary-container p-5 rounded-2xl shadow-2xl">
+            <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1">shield_lock</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-24 bg-surface-container-lowest">
+  <div class="max-w-3xl mx-auto px-6 text-center space-y-6">
+    <h2 class="text-4xl font-bold text-white">Academic Excellence in Cybersecurity</h2>
+    <div class="h-0.5 w-16 bg-primary-fixed mx-auto rounded-full"></div>
+    <p class="text-lg text-on-surface-variant leading-relaxed">This project is developed for a Network Security and Information Assurance course to demonstrate secure digital wallet architecture, attack simulation, and implementation of cybersecurity controls.</p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="py-24 max-w-7xl mx-auto px-6">
+  <div class="mb-16"><h2 class="text-4xl font-bold text-white mb-4">Fortified Features</h2><p class="text-on-surface-variant">Multiple layers of protection for every single transaction.</p></div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="glass-card p-8 rounded-xl flex flex-col gap-4 group"><div class="w-12 h-12 rounded-lg bg-primary-fixed/10 flex items-center justify-center text-primary-fixed group-hover:bg-primary-fixed group-hover:text-on-primary-fixed transition-all"><span class="material-symbols-outlined">payments</span></div><h3 class="text-xl font-semibold text-white">Secure Transactions</h3><p class="text-sm text-on-surface-variant">Validated through multi-node consensus algorithms to prevent double-spending and ledger manipulation.</p></div>
+    <div class="glass-card p-8 rounded-xl flex flex-col gap-4 group"><div class="w-12 h-12 rounded-lg bg-primary-fixed/10 flex items-center justify-center text-primary-fixed group-hover:bg-primary-fixed group-hover:text-on-primary-fixed transition-all"><span class="material-symbols-outlined">lock_open</span></div><h3 class="text-xl font-semibold text-white">End-to-End Encryption</h3><p class="text-sm text-on-surface-variant">AES-256 bit encryption protocols ensuring your sensitive financial data remains unreadable to third parties.</p></div>
+    <div class="glass-card p-8 rounded-xl flex flex-col gap-4 group"><div class="w-12 h-12 rounded-lg bg-primary-fixed/10 flex items-center justify-center text-primary-fixed group-hover:bg-primary-fixed group-hover:text-on-primary-fixed transition-all"><span class="material-symbols-outlined">gpp_maybe</span></div><h3 class="text-xl font-semibold text-white">Fraud Detection</h3><p class="text-sm text-on-surface-variant">AI-powered behavioral analysis identifies anomalous patterns and potential account takeovers in real-time.</p></div>
+    <div class="glass-card p-8 rounded-xl flex flex-col gap-4 group"><div class="w-12 h-12 rounded-lg bg-primary-fixed/10 flex items-center justify-center text-primary-fixed group-hover:bg-primary-fixed group-hover:text-on-primary-fixed transition-all"><span class="material-symbols-outlined">vibration</span></div><h3 class="text-xl font-semibold text-white">Multi-Factor Auth</h3><p class="text-sm text-on-surface-variant">Biometric, hardware token, and SMS verification layers to ensure only authorized owners access assets.</p></div>
+    <div class="glass-card p-8 rounded-xl flex flex-col gap-4 group"><div class="w-12 h-12 rounded-lg bg-primary-fixed/10 flex items-center justify-center text-primary-fixed group-hover:bg-primary-fixed group-hover:text-on-primary-fixed transition-all"><span class="material-symbols-outlined">monitoring</span></div><h3 class="text-xl font-semibold text-white">Real-Time Monitoring</h3><p class="text-sm text-on-surface-variant">A persistent health check system monitors network traffic and node integrity 24/7/365.</p></div>
+    <div class="glass-card p-8 rounded-xl flex flex-col gap-4 group"><div class="w-12 h-12 rounded-lg bg-primary-fixed/10 flex items-center justify-center text-primary-fixed group-hover:bg-primary-fixed group-hover:text-on-primary-fixed transition-all"><span class="material-symbols-outlined">admin_panel_settings</span></div><h3 class="text-xl font-semibold text-white">Role-Based Access</h3><p class="text-sm text-on-surface-variant">Granular permission structures that limit operational capabilities based on user identity and verified status.</p></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="py-20 border-y border-white/5">
+  <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+    <div><div class="text-5xl font-bold text-primary-fixed">10M+</div><div class="text-xs text-on-surface-variant uppercase tracking-widest mt-2">Transactions</div></div>
+    <div><div class="text-5xl font-bold text-primary-fixed">99.9%</div><div class="text-xs text-on-surface-variant uppercase tracking-widest mt-2">Uptime</div></div>
+    <div><div class="text-5xl font-bold text-primary-fixed">0</div><div class="text-xs text-on-surface-variant uppercase tracking-widest mt-2">Breaches</div></div>
+    <div><div class="text-5xl font-bold text-primary-fixed">256</div><div class="text-xs text-on-surface-variant uppercase tracking-widest mt-2">Bit Encryption</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-12 bg-surface-container-lowest border-t border-white/10">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+    <div><div class="text-xl font-bold text-primary-fixed mb-1">SecurePay</div><p class="text-sm text-on-surface-variant">© 2024 SecurePay. All rights reserved.</p></div>
+    <div class="flex flex-wrap gap-8">
+      <a class="text-sm text-on-surface-variant hover:text-white transition-colors" href="#">Contact</a>
+      <a class="text-sm text-on-surface-variant hover:text-white transition-colors" href="#">Privacy Policy</a>
+      <a class="text-sm text-on-surface-variant hover:text-white transition-colors" href="#">Terms of Service</a>
+      <a class="text-sm text-on-surface-variant hover:text-white transition-colors" href="security.html">Security Center</a>
+    </div>
+  </div>
+</footer>
+<script>
+  const API_BASE = 'http://localhost:5000/api';
+  const u = JSON.parse(localStorage.getItem('sp_vuln_user')||'null');
+  const t = localStorage.getItem('sp_vuln_token');
+  if (u && t) {
+    document.getElementById('nav-auth').innerHTML = `
+      <a href="dashboard.html" class="hidden md:flex items-center gap-2 border border-primary-fixed text-primary-fixed px-5 py-2 rounded-full text-xs font-bold hover:bg-primary-fixed/10 transition-all">
+        <span class="material-symbols-outlined text-sm">account_circle</span>${u.fullName?.split(' ')[0]}
+      </a>
+      <button onclick="localStorage.clear();location.reload()" class="bg-primary-fixed text-on-primary-fixed px-5 py-2 rounded-full text-xs font-bold tracking-widest transition-all">LOGOUT</button>`;
+  }
+</script>
+</body>
+</html>
